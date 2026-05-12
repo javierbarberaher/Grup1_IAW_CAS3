@@ -6,7 +6,7 @@ Aquest README ensenya com posar en marxa el servidor.
 ## Primer pas
 
 S'ha de clonar aquest repositori al servidor.
-Clonar aquest git es fa amb aquesta comanda, "git clone https://github.com/javierbarberaher/Grup1_IAW.git", al ser un repositori public no et demanara login, el que requereix d'un token personal d'autentificació.
+Clonar aquest git es fa amb aquesta comanda, "git clone https://github.com/javierbarberaher/Grup1_IAW_CAS3.git", al ser un repositori public no et demanara login, el que requereix d'un token personal d'autentificació.
 
 
 ## Segon pas
