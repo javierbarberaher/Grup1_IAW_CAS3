@@ -1,0 +1,65 @@
+services:
+  # Contenidor de MariaDB.
+  mariadb:
+    image: mariadb:latest #Descarrega l'ultima versió.
+    container_name: institut_montsia
+    restart: always
+    environment:
+      MARIADB_ROOT_PASSWORD: ${MARIADB_ROOT_PASSWORD:-root1234} # Guardats com a variables d'entorn per al frontend.
+      MARIADB_DATABASE: modem_gestio
+      MARIADB_USER: ${MARIADB_USER:-Grup1}
+      MARIADB_PASSWORD: ${MARIADB_PASSWORD:-1234}
+    ports:
+      - "3306:3306"
+    volumes:
+      - db_data:/var/lib/mysql
+      - ./sql:/docker-entrypoint-initdb.d # Executa init.sql per crear les taules.
+    networks:
+      - cas3_net
+
+  # Contenidor de phpmyadmin.
+  phpmyadmin:
+    image: phpmyadmin:latest
+    container_name: cas3_phpmyadmin
+    restart: always
+    depends_on:
+      - mariadb
+    environment:
+      PMA_HOST: mariadb
+      PMA_PORT: 3306
+      PMA_ARBITRARY: 1
+    ports:
+      - "8080:80"
+    networks:
+      - cas3_net
+
+  # Contenidor Apache + PHP.
+  php-httpd:
+    build: .
+    container_name: cas3_php_httpd
+    restart: always
+    depends_on:
+      - mariadb
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./html:/var/www/html
+    environment:
+      APP_NAME: ${APP_NAME:-Gestio de material - Institut Montsia}
+      APP_BASE_URL: ${APP_BASE_URL:-/}
+      DB_HOST: mariadb
+      DB_NAME: modem_gestio
+      DB_USER: ${DB_USER:-Grup1}
+      DB_PASSWORD: ${DB_PASSWORD:-1234}
+      SESSION_SAMESITE: ${SESSION_SAMESITE:-Lax}
+      SESSION_SECURE: ${SESSION_SECURE:-0}
+    networks:
+      - cas3_net
+# Xarxa interna funcionant amb adaptador pont.
+networks:
+  cas3_net:
+    driver: bridge
+# Volums per retindre la informació de MariaDB.
+volumes:
+  db_data:
